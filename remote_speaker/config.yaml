@@ -1,7 +1,7 @@
 version: 0.1.0
 slug: remote_speaker
 name: Remote Speaker
-description: Turn your device into a Media Player with VLC
+description: Turn your Hass.IO into a Media Player with Docker Service
 url: https://github.com/modestpharaoh/hassio-addons/tree/master/remote_speaker
 advanced: true
 arch:
@@ -18,14 +18,6 @@ devices:
 init: false
 map:
   - media:ro
-options:
-  apks: []
-  authorized_keys: []
-  password: ""
-  server:
-    tcp_forwarding: false
-panel_icon: mdi:console
-panel_title: Terminal
 ports:
   5005/tcp: 5005
 ports_description:
