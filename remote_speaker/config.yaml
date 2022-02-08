@@ -1,4 +1,4 @@
-version: 0.1.1
+version: 0.1.2
 slug: remote_speaker
 name: Remote Speaker
 description: Turn your Hass.IO into a Media Player with Docker Service
