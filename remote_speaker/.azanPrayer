@@ -1,0 +1,5 @@
+{
+  "default": "/home/blue/services/remoteSpeaker/sounds/azan.mp3",
+  "fajr_reminder": "/home/blue/services/remoteSpeaker/sounds/fajr_reminder.mp3",
+  "fajr": "/home/blue/services/remoteSpeaker/sounds/fajr.mp3" 
+}
