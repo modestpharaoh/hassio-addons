@@ -16,6 +16,8 @@ Allow Home Assistant to use your local audio device as audio media player via a 
 ## Install with Docker from host.
 Run the following as root, this will create remotespeaker docker container that will always run on start up unless you stop it manually.
 
+**NOTED: It required that alsa-utils to be installed and running on the host.**
+
 ```
 docker run -d --restart unless-stopped \
     -v /dev/snd:/dev/snd \
