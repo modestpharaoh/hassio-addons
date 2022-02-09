@@ -9,4 +9,4 @@ RUN chmod 755 /app
 RUN chmod 755 /app/*.sh
 RUN chmod 755 /app/*.py
 WORKDIR /app
-ENTRYPOINT ["sh /app/gunicorn_starter_speaker.sh"]
+CMD ["sh /app/gunicorn_starter_speaker.sh"]
