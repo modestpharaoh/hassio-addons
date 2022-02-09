@@ -27,7 +27,11 @@ docker run -d --restart unless-stopped \
     -p 5005:5005 \
     --name remotespeaker flask/remotespeaker
 ```
-
+## Predefined audio sources
+I added predifined audio sources in the
+[sounds directory](https://github.com/modestpharaoh/hassio-addons/tree/master/remote_speaker/sounds).
+You add whatever frequently used audio files, but you will need to include them in json format in
+[.audioMessageConfig file](https://github.com/modestpharaoh/hassio-addons/blob/master/remote_speaker/.audioMessageConfig).
 
 
 ## How to use
