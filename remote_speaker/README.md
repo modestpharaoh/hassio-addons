@@ -17,7 +17,7 @@ Allow Home Assistant to use your local audio device as audio media player via a 
 1. Install the add-on.
 2. Run it on start up.
 3. Check add-on logs that gunicron started and running.
-4. Install the custom media player componant to be able to communicate with this add-on.
+4. Install my custom media player componant [Remote Speaker](https://github.com/modestpharaoh/hassio-custom-components/tree/main/tts_remote_speaker) to be able to communicate with this add-on.
 
 ## Supported Features
 * Home assistant local media browser.
