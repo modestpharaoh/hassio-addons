@@ -1,6 +1,6 @@
 # Home Assistant Add-on: Remote Speaker
 
-Allow Home Assistant to use your local audio device as Media Player via a simple Rest-API.
+Allow Home Assistant to use your local audio device as audio media player via a simple Rest-API.
 
 ## WARNING!!!!
 * Code is not perfect, it is only for my used cases.
@@ -17,6 +17,18 @@ Allow Home Assistant to use your local audio device as Media Player via a simple
 1. Install the add-on.
 2. Run it on start up.
 3. Check add-on logs that gunicron started and running.
+4. Install the custom media player componant to be able to communicate with this add-on.
+
+## Supported Features
+* Home assistant local media browser.
+* Play local media.
+* Play certain media come with the containers such as alarm sounds and azan prayer.
+* Play, pause, seek and stop current audio selected.
+* Volume set.
+
+
+## Tips
+A simple way of multiple speakers not directly attache to home assistant, get Aux to bluetooth transmitter that supports connecting to two bluetooth speaker and connect it to your hass.io host. 
 
 ## Urls
 [Add-on link](https://github.com/modestpharaoh/hassio-addons/tree/master/remote_speaker)
