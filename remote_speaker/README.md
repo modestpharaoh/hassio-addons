@@ -7,11 +7,26 @@ Allow Home Assistant to use your local audio device as audio media player via a 
 * It is only tested on Raspberry Pi 4.
 * You may need to suspend hassio_audio on start up, a work around to install [Alsa & PulseAudio Fix Container](https://github.com/OPHoperHPO/hassio-addons/tree/master/pulseaudio_fix) and run it at start up
 
-## Install
+## Install with Hass.io
 1. Add this url to your hass.io addons repos: \
 `https://github.com/modestpharaoh/hassio-addons`
 2. Update addons list.
 3. Install Remote Speaker add-on.
+
+## install with Docker from host.
+Run the following as root, this will create remotespeaker docker container that will always run on start up unless you stop it manually.
+
+```
+docker run -d --restart unless-stopped \
+    -v /dev/snd:/dev/snd \
+    -v /dev/shm:/dev/shm \
+    -v /usr/share/hassio/media:/media \
+     --privileged \
+    -p 5005:5005 \
+    --name remotespeaker flask/remotespeaker
+```
+
+
 
 ## How to use
 1. Install the add-on.
