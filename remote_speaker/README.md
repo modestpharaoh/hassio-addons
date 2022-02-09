@@ -13,7 +13,7 @@ Allow Home Assistant to use your local audio device as audio media player via a 
 2. Update addons list.
 3. Install Remote Speaker add-on.
 
-## install with Docker from host.
+## Install with Docker from host.
 Run the following as root, this will create remotespeaker docker container that will always run on start up unless you stop it manually.
 
 ```
