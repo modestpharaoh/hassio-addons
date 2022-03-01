@@ -1,0 +1,23 @@
+version: 0.0.1
+slug: kobo_glo_hd_dash
+name: Kobo Glo HD Dash
+description: Generate Custom dashboard as a PNG image to be displayed on Kobo Glo HD
+url: https://github.com/modestpharaoh/hassio-addons/tree/master/kobo_dash
+advanced: true
+arch:
+  - armhf
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+boot: auto
+init: false
+ports:
+  5006/tcp: 5006
+ports_description:
+  5006/tcp: Rest-API Port
+map:
+  - config:rw
+schema: false
+stage: experimental
+startup: services
