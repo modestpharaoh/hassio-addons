@@ -373,8 +373,8 @@ def genKoboDash():
 
     #pygame.image.save(screen, "image.png")
     rotated= pygame.transform.rotate(screen, 90)
-    pygame.image.save(rotated, "/config/koboGloDash.png")
-    #pygame.image.save(rotated, "/usr/share/hassio/homeassistant/koboGloDash.png")
+    pygame.image.save(rotated, "/media/koboGloDash.png")
+    #pygame.image.save(rotated, "/usr/share/hassio/media/koboGloDash.png")
     return('successful')
 
 if __name__ == "__main__":
