@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 0.0.2
 slug: kobo_glo_hd_dash
 name: Kobo Glo HD Dash
 description: Generate Custom dashboard as a PNG image to be displayed on Kobo Glo HD
@@ -17,7 +17,7 @@ ports:
 ports_description:
   5006/tcp: Rest-API Port
 map:
-  - config:rw
+  - media:rw
 schema: false
 stage: experimental
 startup: services
