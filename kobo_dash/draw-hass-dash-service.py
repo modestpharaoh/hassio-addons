@@ -21,13 +21,22 @@ rainSymbol = os.path.join(workDir, 'images' ,"rain.png")
 # screen.
 screenWidth=1353
 screenLength=1072
+screen = pygame.Surface((screenWidth, screenLength))
+white = (255, 255, 255)
+black = (0, 0, 0)
+gray = (125, 125, 125)
+img_dash_path = "/media/koboGloDash.png"
+#img_dash_path = "./koboGloDash.png"
 
 
+curTime = datetime.now().strftime("%H:%M")
+curDate = datetime.now().strftime("%a   %h %d") #"Fri     Feb 25"
 
 curTempIn = "22.2"
 curHumdIn = "50"
 curTempOut = "25.2"
 curHumdOut = "90"
+todayPressure= 1002
 
 fajr_time    = "05:41"
 sunrise_time = "07:21"
@@ -106,18 +115,13 @@ def getWeatherSymbol(forecast):
     #print(weatherSymbolPath)
     return weatherSymbolPath
 
-    
+@app.route('/getKoboDash', methods=['GET'])
+def getKoboDash():
+    #drawDash()
+    return send_file(img_dash_path, mimetype="image/png")
 
-
-screen = pygame.Surface((screenWidth, screenLength))
-white = (255, 255, 255)
-black = (0, 0, 0)
-gray = (125, 125, 125)
 @app.route('/genKoboDash', methods=['GET'])
 def genKoboDash():
-    pygame.font.init()
-
-    screen.fill(white)
 
     curTime = datetime.now().strftime("%H:%M")
     curDate = datetime.now().strftime("%a   %h %d") #"Fri     Feb 25"
@@ -163,11 +167,17 @@ def genKoboDash():
     twDayWind     = request.args.get('twDayWind')
     trDayWind     = request.args.get('trDayWind')
 
+    drawDash()
+    
+    return('successful')
 
 
 
-
-
+@app.route('/drawDash', methods=['GET'])
+def drawDash():
+    pygame.font.init()
+    screen.fill(white)
+    
     global textX, textY, textFontSize, fontName
 
     ########################### Draw forecast symbols
@@ -373,9 +383,10 @@ def genKoboDash():
 
     #pygame.image.save(screen, "image.png")
     rotated= pygame.transform.rotate(screen, 90)
-    pygame.image.save(rotated, "/media/koboGloDash.png")
-    #pygame.image.save(rotated, "/usr/share/hassio/media/koboGloDash.png")
+    pygame.image.save(rotated, img_dash_path)
     return('successful')
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port='5006')
