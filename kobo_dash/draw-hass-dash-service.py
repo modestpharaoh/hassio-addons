@@ -118,10 +118,12 @@ def getWeatherSymbol(forecast):
 @app.route('/getKoboDash', methods=['GET'])
 def getKoboDash():
     #drawDash()
+    global img_dash_path
     return send_file(img_dash_path, mimetype="image/png")
 
 @app.route('/genKoboDash', methods=['GET'])
 def genKoboDash():
+    global img_dash_path, curTime, curDate, curTempIn, curHumdIn, curTempOut, curHumdOut, fajr_time, sunrise_time, dhuhr_time, asr_time, mghrb_time, isha_time, todayForecast, hrTwoForecast, hrForForecast, tomrwForecast, twDayForecast, trDayForecast, todayHighT, hrTwoHighT, hrForHighT, tomrwHighT, twDayHighT, trDayHighT, todayPressure, tomrwLowT, twDayLowT, trDayLowT, todayHumid, hrTwoRain, hrForRain, tomrwRain, twDayRain, trDayRain, todayWind, hrTwoWind, hrForWind, tomrwWind, twDayWind, trDayWind
 
     curTime = datetime.now().strftime("%H:%M")
     curDate = datetime.now().strftime("%a   %h %d") #"Fri     Feb 25"
@@ -175,6 +177,8 @@ def genKoboDash():
 
 @app.route('/drawDash', methods=['GET'])
 def drawDash():
+    global img_dash_path, curTime, curDate, curTempIn, curHumdIn, curTempOut, curHumdOut, fajr_time, sunrise_time, dhuhr_time, asr_time, mghrb_time, isha_time, todayForecast, hrTwoForecast, hrForForecast, tomrwForecast, twDayForecast, trDayForecast, todayHighT, hrTwoHighT, hrForHighT, tomrwHighT, twDayHighT, trDayHighT, todayPressure, tomrwLowT, twDayLowT, trDayLowT, todayHumid, hrTwoRain, hrForRain, tomrwRain, twDayRain, trDayRain, todayWind, hrTwoWind, hrForWind, tomrwWind, twDayWind, trDayWind
+    
     pygame.font.init()
     screen.fill(white)
     
