@@ -25,7 +25,8 @@ screen = pygame.Surface((screenWidth, screenLength))
 white = (255, 255, 255)
 black = (0, 0, 0)
 gray = (125, 125, 125)
-img_dash_path = "/media/koboGloDash.png"
+img_dash_path = "/dev/shm/koboGloDash.png"
+#img_dash_path = "/media/koboGloDash.png"
 #img_dash_path = "./koboGloDash.png"
 
 
