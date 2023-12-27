@@ -1,6 +1,6 @@
 {
   "name": "Multi-DDNS",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "slug": "multiddns",
   "description": "Free Dynamic DNS via Multi DDNS Provider with Let's Encrypt support",
   "url": "https://github.com/modestpharaoh/hassio-addons/tree/master/multi-ddns",
