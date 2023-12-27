@@ -1,5 +1,4 @@
 #!/usr/bin/with-contenv bashio
-# /bin/bash bashio
 
 #bashio::log.level "debug"
 
