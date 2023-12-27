@@ -9,5 +9,5 @@ COPY app/*.sh /data/
 RUN chmod 755 /data
 RUN chmod 755 /data/*.sh
 
-WORKDIR /data
-CMD [ "./run.sh" ]
+WORKDIR /data/
+CMD [ "/data/run.sh" ]
