@@ -5,9 +5,7 @@ FROM $BUILD_FROM
 RUN apk add --no-cache openssl certbot
 
 # Copy data
-COPY app/*.sh /data/
-RUN chmod 755 /data
-RUN chmod 755 /data/*.sh
+COPY app/*.sh /
+RUN chmod 755 /*.sh
 
-WORKDIR /data/
-CMD [ "/data/run.sh" ]
+CMD [ "/run.sh" ]
