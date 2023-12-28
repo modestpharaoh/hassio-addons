@@ -1,12 +1,12 @@
-#!/usr/bin/env bashio
+#!/usr/bin/with-contenv bashio
 
-#bashio::log.level "debug"
+# bashio::log.level "debug"
 
-bashio::config.exists 'log_level' && bashio::log.level "$(bashio::config 'log_level')"
+#bashio::config.exists 'log_level' && bashio::log.level "$(bashio::config 'log_level')"
 
-# if bashio::var.has_value "${log_level}"; then
-#   bashio::log.level "${log_level}"
-# fi
+if bashio::var.has_value "${log_level}"; then
+  bashio::log.level "$(bashio::config 'log_level')"
+fi
 
 source /api_lib.sh
 
