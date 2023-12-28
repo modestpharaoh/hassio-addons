@@ -25,3 +25,7 @@
 ## 0.0.8
 
 - improved error handling
+
+## 0.0.9
+
+- improved error handling
