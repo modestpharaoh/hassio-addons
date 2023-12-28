@@ -1,14 +1,12 @@
 #!/usr/bin/with-contenv bashio
 
-# bashio::log.level "debug"
-
-#bashio::config.exists 'log_level' && bashio::log.level "$(bashio::config 'log_level')"
-
 if bashio::var.has_value "log_level"; then
   bashio::log.level "$(bashio::config 'log_level')"
 fi
 
 source /api_lib.sh
+
+set +e
 
 CERT_DIR=/data/letsencrypt
 
@@ -32,8 +30,8 @@ bashio::log.debug "DuckDNS Token:" "$Duck_Token"
 # Function to get the public IP
 function get_public_ip() {
   # If IP is not configured manually get the public ip using wtfismyip.com
-  [[ ${IPV4} != *:/* ]] && ipv4=${IPV4} || ipv4=$(curl -s -f -m 10 "${IPV4}") || true
-  [[ ${IPV6} != *:/* ]] && ipv6=${IPV6} || ipv6=$(curl -s -f -m 10 "${IPV6}") || true
+  [[ ${IPV4} != *:/* ]] && ipv4=${IPV4} || ipv4=$(curl -s -f -m 20 "${IPV4}") || true
+  [[ ${IPV6} != *:/* ]] && ipv6=${IPV6} || ipv6=$(curl -s -f -m 20 "${IPV6}") || true
 }
 
 # Function that performe a renew
@@ -61,7 +59,7 @@ function le_renew() {
       --manual-cleanup-hook /cleanup_script.sh \
       --register-unsafely-without-email --agree-tos \
       --deploy-hook /deploy_hook.sh \
-      ${domain_args[@]}
+      ${domain_args[@]} || bashio::log.warning "Add-on hit the limit of let's encrypt updates!!"
     LE_UPDATE="$(date +%s)"
 }
 
@@ -101,22 +99,23 @@ while true; do
       bashio::log.debug "Updating IP for DuckDNS domain:" "${domain}"
 
       # Update DuckDNS domain IP
-      duck_ip_resp=$(curl -s "https://www.duckdns.org/update?domains=${domain}&token=${Duck_Token}&ip=${ipv4}")
+      duck_ip_resp=$(curl -s -f -m 10 "https://www.duckdns.org/update?domains=${domain}&token=${Duck_Token}&ip=${ipv4}")
       bashio::log.debug "DuckDNS IP Update response for domain ${domain}:" "${duck_ip_resp}"
     else
       # Any other domain will be considered as dynu domain
       bashio::log.debug "Updating IP for Dynu domain:" "${domain}"
 
       # Getting the Dynu Domain ID for the given
-      DynuDomainId=$(curl -s -X GET https://api.dynu.com/v2/dns -H "accept: application/json" -H \
-        "API-Key: ${Dynu_Token}"  | jq --arg domain "${domain}" '.domains[] | select(.name == $domain) | .id')
-      bashio::log.debug "Dynu ${domain} ID:" "${DynuDomainId}"
-
-      # Update the Dynu domain with the public ip
-      dynu_ip_resp=$(curl -s -X POST -H "API-Key: ${Dynu_Token}" -H "Content-Type: application/json" \
-        "https://api.dynu.com/v2/dns/${DynuDomainId}"  \
-        -d "{\"name\":\"$domain\",\"ipv4Address\": \"${ipv4}\",\"ipv6Address\": \"${ipv6}\"}")
-      bashio::log.debug "Dynu IP Update response for domain ${domain}:" "${dynu_ip_resp}"
+      DynuDomainId=$(get_dynu_domain_id $domain $Dynu_Token)
+      if [ $? -eq 0 ]; then
+        # Update the Dynu domain with the public ip
+        dynu_ip_resp=$(curl -s -f -m 20 -X POST -H "API-Key: ${Dynu_Token}" -H "Content-Type: application/json" \
+          "https://api.dynu.com/v2/dns/${DynuDomainId}"  \
+          -d "{\"name\":\"$domain\",\"ipv4Address\": \"${ipv4}\",\"ipv6Address\": \"${ipv6}\"}")
+        bashio::log.debug "Dynu IP Update response for domain ${domain}:" "${dynu_ip_resp}"
+      else
+        bashio::log.warning "Failed to update public IP for domain ${domain}. SKIPPING this time..."
+      fi
     fi
   done
   now="$(date +%s)"

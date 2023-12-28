@@ -47,8 +47,8 @@ function challenge_verify() {
 
         # Check if the total elapsed time exceeds the timeout
         if [ $elapsed_time -ge $TIMEOUT_SECONDS ]; then
-            bashio::log.debug "Timeout reached. Exiting!"
-            exit 1
+            bashio::log.warning "Timeout reached. Exiting!"
+            exit 0
         fi
     done
 }
@@ -67,24 +67,33 @@ else
 
     rm_dynu_txt_record "$domain" "$DYNU_TOKEN"
 
-    # Get the ID of the Dynu domain
-    DOMAINID=$(curl -s -X GET https://api.dynu.com/v2/dns -H "accept: application/json" -H \
-            "API-Key: ${DYNU_TOKEN}"  | jq  --arg domain "$domain"  '.domains[]  | select(.name == $domain) | .id')
-    bashio::log.debug "Dynu ${domain} ID:" "${DOMAINID}"
-
-
-    # Feed the TXT challenge to Dynu domain
-    resp=$(curl -s -X POST "https://api.dynu.com/v2/dns/${DOMAINID}/record" \
-    -H "API-Key: $DYNU_TOKEN" \
-    -H "Content-Type: application/json" \
-    --data '{
-    "nodeName": "_acme-challenge",
-    "recordType": "TXT",
-    "textData": "'"$TXT_VALUE"'",
-    "state": true,
-    "ttl": 90
-    }' )
-    bashio::log.debug "Dynu challenge deploy response:" "${resp}"
-    challenge_verify
+      # Getting the Dynu Domain ID for the given domain
+      DOMAINID=$(get_dynu_domain_id $domain $DYNU_TOKEN)
+      if [ $? -eq 0 ]; then
+        repeat_count=3
+        failed=0
+        for ((i = 1; i <= repeat_count; i++)); do
+        # Feed the TXT challenge to Dynu domain
+            resp=$(curl -s -X POST "https://api.dynu.com/v2/dns/${DOMAINID}/record" \
+            -H "API-Key: $DYNU_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data '{
+            "nodeName": "_acme-challenge",
+            "recordType": "TXT",
+            "textData": "'"$TXT_VALUE"'",
+            "state": true,
+            "ttl": 90
+            }' )
+            if [ $? -eq 0 ]; then
+                failed=0
+                break
+            fi
+            failed=1
+        done
+        bashio::log.debug "Dynu challenge deploy response:" "${resp}"
+        challenge_verify
+      else
+        bashio::log.warning "Failed to update public IP for domain ${domain}. SKIPPING this time..."
+      fi
 
 fi
