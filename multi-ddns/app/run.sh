@@ -3,7 +3,7 @@
 
 #bashio::log.level "debug"
 
-source api_lib.sh
+source /api_lib.sh
 
 CERT_DIR=/data/letsencrypt
 
@@ -52,10 +52,10 @@ function le_renew() {
     bashio::log.debug "domain_args:" "${domain_args[@]}"
 
     certbot certonly --force-renewal --manual --preferred-challenges dns --cert-name hass-cert \
-      --manual-auth-hook ./auth_script.sh \
-      --manual-cleanup-hook ./cleanup_script.sh \
+      --manual-auth-hook /auth_script.sh \
+      --manual-cleanup-hook /cleanup_script.sh \
       --register-unsafely-without-email --agree-tos \
-      --deploy-hook ./deploy_hook.sh \
+      --deploy-hook /deploy_hook.sh \
       ${domain_args[@]}
     LE_UPDATE="$(date +%s)"
 }

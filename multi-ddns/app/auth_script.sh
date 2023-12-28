@@ -1,6 +1,6 @@
 #!/bin/bash bashio
 
-source api_lib.sh
+source /api_lib.sh
 
 # bashio::log.level "debug"
 
