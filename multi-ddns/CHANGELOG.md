@@ -29,3 +29,7 @@
 ## 0.0.9
 
 - improved error handling
+
+## 1.0.0
+
+- Update the certificate refresh to 12 hrs
