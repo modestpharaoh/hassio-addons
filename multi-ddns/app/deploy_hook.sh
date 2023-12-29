@@ -1,6 +1,6 @@
 #!/usr/bin/env bashio
 
-#bashio::log.level "debug"
+# bashio::log.level "debug"
 
 bashio::log.info "Deploying new certs to /ssl ..."
 cp -f /etc/letsencrypt/live/hass-cert/fullchain.pem /ssl

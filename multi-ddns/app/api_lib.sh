@@ -4,6 +4,37 @@
 
 TXT_NAME="_acme-challenge"
 
+function get_dynu_domain_id() {
+    domain="$1"
+    DYNU_TOKEN="${2}"
+
+    repeat_count=3
+    failed=0
+    for ((i = 1; i <= repeat_count; i++)); do
+        bashio::log.debug "Calling Dynu API response to get all domains: Try # ${i}"
+        # Getting the Dynu Domain ID for the given
+        DynuDomainsResp=$(curl -s -f -m 20 -X GET https://api.dynu.com/v2/dns \
+        -H "accept: application/json" \
+        -H "API-Key: ${DYNU_TOKEN}")
+        if [ $? -eq 0 ]; then
+            failed=0
+            break
+        fi
+        failed=1
+    done
+    if [ $failed -eq 0 ]; then
+        bashio::log.debug "Dynu ${domain} API response:" "${DynuDomainsResp}"
+        DynuDomainId=$(echo $DynuDomainsResp \
+            | jq --arg domain "${domain}" '.domains[] | select(.name == $domain) | .id') 
+        bashio::log.debug "Dynu ${domain} ID:" "${DynuDomainId}"
+        echo "$DynuDomainId" # To return The domain
+        return 0
+    else
+        bashio::log.warning "Failed to update public IP for domain ${domain}. SKIPPING this time..."
+        return 1
+    fi
+}
+
 function verify_challenge() {
     domain="$1"
     TXT_RECORD="_acme-challenge.$domain"
@@ -96,22 +127,26 @@ function rm_duck_txt_record() {
 function rm_dynu_txt_record() {
     domain="$1"
     DYNU_TOKEN="${2}"
+    
     bashio::log.debug "Clean up Dynu TXT records..."
-    # Get the ID of the Dynu domain
-    DOMAINID=$(curl -s -X GET https://api.dynu.com/v2/dns -H "accept: application/json" -H \
-            "API-Key: ${DYNU_TOKEN}"  | jq  --arg domain "$domain"  '.domains[]  | select(.name == $domain) | .id')
-    bashio::log.debug "Dynu ${domain} ID:" "${DOMAINID}"
 
-    # Get DNS records for the Dynu domain
-    RECORDS=$(curl -s -X GET https://api.dynu.com/v2/dns/$DOMAINID/record -H "accept: application/json" -H \
-            "API-Key: ${DYNU_TOKEN}"  | jq -r '.dnsRecords[] | select(.recordType == "TXT")  | .id' )
-    bashio::log.debug "DNS Records related:" "${RECORDS}"
-    for record in $RECORDS; do
-        bashio::log.debug "Deleting record: $record"
-        del_resp=$(curl -s -X DELETE "https://api.dynu.com/v2/dns/${DOMAINID}/record/$record" \
-        -H "API-Key: $DYNU_TOKEN" \
-        -H "accept: application/json" )
-        bashio::log.debug "Delete record response:" "${del_resp}"
-    done
-    return 0
+    # Getting the Dynu Domain ID for the given
+    DOMAINID=$(get_dynu_domain_id $domain $DYNU_TOKEN)
+    if [ $? -eq 0 ]; then
+        # Get DNS records for the Dynu domain
+        RECORDS=$(curl -s -X GET https://api.dynu.com/v2/dns/$DOMAINID/record -H "accept: application/json" -H \
+                "API-Key: ${DYNU_TOKEN}"  | jq -r '.dnsRecords[] | select(.recordType == "TXT")  | .id' )
+        bashio::log.debug "DNS Records related:" "${RECORDS}"
+        for record in $RECORDS; do
+            bashio::log.debug "Deleting record: $record"
+            del_resp=$(curl -s -X DELETE "https://api.dynu.com/v2/dns/${DOMAINID}/record/$record" \
+            -H "API-Key: $DYNU_TOKEN" \
+            -H "accept: application/json" )
+            bashio::log.debug "Delete record response:" "${del_resp}"
+        done
+        return 0
+    else
+        bashio::log.warning "Failed to update public IP for domain ${domain}. SKIPPING this time..."
+        return 1
+    fi 
 }
