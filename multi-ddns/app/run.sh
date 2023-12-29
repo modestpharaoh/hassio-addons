@@ -134,11 +134,14 @@ function le_renew() {
           --deploy-hook /deploy_hook.sh \
           --non-interactive \
           ${domain_args[@]} # || bashio::log.warning "Add-on hit the limit of let's encrypt updates!!"
-        bashio::log.warning "Certbot expand exit code:" "$?"
+        if [ $? -ne 0 ]; then
+          bashio::log.warning "Certbot expand exit code:" "$?"
+        fi
       fi
     fi
 
     LE_UPDATE="$(date +%s)"
+    bashio::log.debug "Next update at epoch:" "$LE_UPDATE"
 }
 
 ########################

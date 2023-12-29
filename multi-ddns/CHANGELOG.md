@@ -48,3 +48,7 @@
 ## 1.0.3
 
 - Fix bug of changing domains in the config
+
+## 1.0.4
+
+- Update some debugging logs.
