@@ -33,3 +33,8 @@
 ## 1.0.0
 
 - Update the certificate refresh to 12 hrs
+
+
+## 1.0.1
+
+- Improve the error handling and code comments
