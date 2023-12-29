@@ -12,15 +12,18 @@ domain="$CERTBOT_DOMAIN"
 TXT_NAME="_acme-challenge"
 TXT_VALUE="$CERTBOT_VALIDATION"
 
-
-if [[ $domain == *"duckdns.org" ]]; then
-    rm_duck_txt_record "$domain" "$DUCKDNS_TOKEN"
-else
-    # Getting the Dynu DNS domain IDs
-    DOMAINID=$(get_dynu_domain_id $domain $DYNU_TOKEN)
-    if [ $? -eq 0 ]; then
-        rm_dynu_txt_records "$domain" "$DYNU_TOKEN" "$DOMAINID"
+if [[ $domain != *"*."* ]]; then
+    if [[ $domain == *"duckdns.org" ]]; then
+        rm_duck_txt_record "$domain" "$DUCKDNS_TOKEN"
     else
-        bashio::log.warning "Domain $domain: Can't delete TXT DNS records without the domain ID!!!"
+        # Getting the Dynu DNS domain IDs
+        DOMAINID=$(get_dynu_domain_id $domain $DYNU_TOKEN)
+        if [ $? -eq 0 ]; then
+            rm_dynu_txt_records "$domain" "$DYNU_TOKEN" "$DOMAINID"
+        else
+            bashio::log.warning "Domain $domain: Can't delete TXT DNS records without the domain ID!!!"
+        fi
     fi
+else
+    bashio::log.debug "Domain $domain: Skipping clean up for *domains..."
 fi
