@@ -44,3 +44,7 @@
 - Only issue renew, if certificate is going to expire in less than a month.
 - Reset let's encrypt folder, if domains are changed.
 - Now you can also include * sub-domains of DuckDNS and Dynu. 
+
+## 1.0.3
+
+- Fix bug of changing domains in the config
