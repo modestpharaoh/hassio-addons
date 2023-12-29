@@ -16,3 +16,7 @@
 ## 0.0.6
 
 - Fix log level bug.
+
+## 0.0.6
+
+- Fix for log level
