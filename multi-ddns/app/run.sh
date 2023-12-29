@@ -4,7 +4,7 @@
 
 #bashio::config.exists 'log_level' && bashio::log.level "$(bashio::config 'log_level')"
 
-if bashio::var.has_value "${log_level}"; then
+if bashio::var.has_value "log_level"; then
   bashio::log.level "$(bashio::config 'log_level')"
 fi
 
