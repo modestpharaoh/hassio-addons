@@ -1,5 +1,8 @@
 #!/usr/bin/with-contenv bashio
 
+# Logs should include the date/time.
+export __BASHIO_LOG_TIMESTAMP="%y-%m-%d %T"
+
 if bashio::var.has_value "log_level"; then
   bashio::log.level "$(bashio::config 'log_level')"
 fi
@@ -16,6 +19,8 @@ LE_UPDATE="0"
 # Config to variable
 if bashio::config.has_value "ipv4"; then IPV4=$(bashio::config 'ipv4'); else IPV4="https://ipv4.text.wtfismyip.com"; fi
 if bashio::config.has_value "ipv6"; then IPV6=$(bashio::config 'ipv6'); else IPV6="https://ipv6.text.wtfismyip.com"; fi
+IPV4_="https://ifconfig.co/ip"
+IPV6_="https://ifconfig.co/ip6"
 DYNU_TOKEN=$(bashio::config 'dynu_token')
 DUCK_TOKEN=$(bashio::config 'duck_token')
 DOMAINS=$(bashio::config 'domains')
@@ -26,12 +31,34 @@ export Dynu_Token=$DYNU_TOKEN
 export Duck_Token=$DUCK_TOKEN
 bashio::log.debug "Dynu Token:" "$Dynu_Token"
 bashio::log.debug "DuckDNS Token:" "$Duck_Token"
+prv_ipv4=""
+prv_ipv6=""
 
 # Function to get the public IP
 function get_public_ip() {
   # If IP is not configured manually get the public ip using wtfismyip.com
-  [[ ${IPV4} != *:/* ]] && ipv4=${IPV4} || ipv4=$(curl -s -f -m 20 "${IPV4}") || true
-  [[ ${IPV6} != *:/* ]] && ipv6=${IPV6} || ipv6=$(curl -s -f -m 20 "${IPV6}") || true
+  [[ ${IPV4} != *:/* ]] && ipv4=${IPV4} || ipv4=$(curl -s -f -m 20 "${IPV4}") || ipv4=$(curl -s -f -m 20 "${IPV4_}") || ipv4=""
+  [[ ${IPV6} != *:/* ]] && ipv6=${IPV6} || ipv6=$(curl -s -f -m 20 "${IPV6}") || ipv6=$(curl -s -f -m 20 "${IPV6_}") || ipv6=""
+  bashio::log.debug "ipv4:" "$ipv4"
+  bashio::log.debug "ipv6:" "$ipv6"
+
+  if [ -z "$ipv4" ] ; then
+    bashio::log.warning "Failed to get the current public IPv4!"
+  else
+    if [ "$ipv4" != "$prv_ipv4" ]; then
+      bashio::log.info "IPv4 changed from $prv_ipv4 to $ipv4"
+      prv_ipv4="$ipv4"
+    fi
+  fi
+
+  if [ -z "$ipv6" ] ; then
+    bashio::log.debug "Failed to get the current public IPv6!"
+  else
+    if [ "$ipv6" != "$prv_ipv6" ]; then
+      bashio::log.info "IPv6 changed from $prv_ipv6 to $ipv6"
+      prv_ipv6="$ipv6"
+    fi
+  fi
 }
 
 # Function to get domains in current certificate
@@ -192,32 +219,47 @@ fi
 while true; do
   get_public_ip
 
-  bashio::log.debug "ipv4:" "$ipv4"
-  bashio::log.debug "ipv6:" "$ipv6"
-
   for domain in ${DOMAINS}; do
     # Skipping any *.xxx.duckdns.org  or *.xxx.${dynu_domain}.org
     if [[ $domain != *"*."* ]]; then
       if [[ $domain == *"duckdns.org" ]]; then
-        bashio::log.debug "Updating IP for DuckDNS domain:" "${domain}"
-
-        # Update DuckDNS domain IP
-        duck_ip_resp=$(curl -s -f -m 10 "https://www.duckdns.org/update?domains=${domain}&token=${Duck_Token}&ip=${ipv4}")
-        bashio::log.debug "DuckDNS IP Update response for domain ${domain}:" "${duck_ip_resp}"
-      else
-        # Any other domain will be considered as dynu domain
-        bashio::log.debug "Updating IP for Dynu domain:" "${domain}"
-
-        # Getting the Dynu Domain ID for the given
-        DynuDomainId=$(get_dynu_domain_id $domain $Dynu_Token)
-        if [ $? -eq 0 ]; then
-          # Update the Dynu domain with the public ip
-          dynu_ip_resp=$(curl -s -f -m 20 -X POST -H "API-Key: ${Dynu_Token}" -H "Content-Type: application/json" \
-            "https://api.dynu.com/v2/dns/${DynuDomainId}"  \
-            -d "{\"name\":\"$domain\",\"ipv4Address\": \"${ipv4}\",\"ipv6Address\": \"${ipv6}\"}")
-          bashio::log.debug "Dynu IP Update response for domain ${domain}:" "${dynu_ip_resp}"
+        
+        # Update DuckDNS domain with the public IPv4
+        if [ -n "$ipv4" ] ; then
+          bashio::log.debug "Domain ${domain}: Updating DuckDNS with IPv4: $ipv4"
+          duck_ipv4_resp=$(curl -s -f -m 10 "https://www.duckdns.org/update?domains=${domain}&token=${Duck_Token}&ip=${ipv4}")
+          bashio::log.debug "Domain ${domain}: DuckDNS update IP response:" "${duck_ipv4_resp}"
         else
-          bashio::log.warning "Failed to update public IP for domain ${domain}. SKIPPING this time..."
+          bashio::log.warning "Domain ${domain}: Skipping DuckDNS IPv4 update, as IPv4 is empty!!"
+        fi
+
+        # Update DuckDNS domain with the public IPv6
+        if [ -n "$ipv6" ] ; then
+          bashio::log.debug "Domain ${domain}: Updating DuckDNS with IPv6: $ipv6"
+          duck_ipv6_resp=$(curl -s -f -m 10 "https://www.duckdns.org/update?domains=${domain}&token=${Duck_Token}&ipv6=${ipv6}")
+          bashio::log.debug "Domain ${domain}: DuckDNS update IP response:" "${duck_ipv6_resp}"
+        else
+          bashio::log.debug "Domain ${domain}: Skipping DuckDNS IPv6 update, as IPv6 is empty!!"
+        fi
+
+      else
+        if [ -n "$ipv4" ] || [ -n "$ipv6" ] ; then
+          # Any other domain will be considered as dynu domain
+          bashio::log.debug "Domain ${domain}: Updating DuckDNS with IPv4: $ipv4 & IPv6: $ipv6"
+
+          # Getting the Dynu Domain ID
+          DynuDomainId=$(get_dynu_domain_id $domain $Dynu_Token)
+          if [ $? -eq 0 ]; then
+            # Update the Dynu domain with the public ip
+            dynu_ip_resp=$(curl -s -f -m 20 -X POST -H "API-Key: ${Dynu_Token}" -H "Content-Type: application/json" \
+              "https://api.dynu.com/v2/dns/${DynuDomainId}"  \
+              -d "{\"name\":\"$domain\",\"ipv4Address\": \"${ipv4}\",\"ipv6Address\": \"${ipv6}\"}")
+            bashio::log.debug "Domain ${domain}: Dynu update ip response:" "${dynu_ip_resp}"
+          else
+            bashio::log.warning "Domain ${domain}: Skipping Dynu IP update, as failed to get Dynu domain ID!!"
+          fi
+        else
+          bashio::log.debug "Domain ${domain}: Skipping Dynu IP update, as IPv4 & IPv6 are empty!!"
         fi
       fi
     fi
