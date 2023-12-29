@@ -121,7 +121,7 @@ while true; do
   now="$(date +%s)"
   bashio::log.debug "Time Now:" "${now}"
   bashio::log.debug "Last Update was at:" "${LE_UPDATE}"
-  if bashio::config.true 'lets_encrypt.accept_terms' && [ $((now - LE_UPDATE)) -ge 432000 ]; then
+  if bashio::config.true 'lets_encrypt.accept_terms' && [ $((now - LE_UPDATE)) -ge 43200 ]; then
     bashio::log.debug "Time to update the certificates..."
     le_renew
   fi
