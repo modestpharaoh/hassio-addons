@@ -1,4 +1,4 @@
-#!/bin/bash bashio
+#!/usr/bin/env bashio
 
 source /api_lib.sh
 

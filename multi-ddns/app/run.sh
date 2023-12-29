@@ -2,6 +2,10 @@
 
 #bashio::log.level "debug"
 
+if bashio::var.has_value "${LOG_LEVEL}"; then
+  bashio::log.level "${LOG_LEVEL}"
+fi
+
 source /api_lib.sh
 
 CERT_DIR=/data/letsencrypt
