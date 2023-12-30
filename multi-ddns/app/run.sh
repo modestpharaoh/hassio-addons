@@ -36,7 +36,7 @@ function get_public_ip() {
 
 # Function to get domains in current certificate
 function get_current_cert_domains() {
-  cert_domains=$(openssl x509 -in /ssl/fullchain.pem -noout -text | grep -E 'DNS:' |  sed 's/DNS://g; s/ //g')
+  cert_domains=$(openssl x509 -in ${CERT_DIR}/live/hass-cert/fullchain.pem -noout -text | grep -E 'DNS:' |  sed 's/DNS://g; s/ //g')
   IFS=',' read -ra cert_domains_array <<< "$cert_domains"
 }
 
@@ -83,7 +83,7 @@ function get_month_epoch() {
 
 # Function to get the expiry date of the certificate
 function get_cert_expiry() {
-  expiration_date=$(openssl x509 -in /ssl/fullchain.pem -noout -dates -enddate | awk -F= '/notAfter/ {print $2}' 2> /dev/null)
+  expiration_date=$(openssl x509 -in ${CERT_DIR}/live/hass-cert/fullchain.pem -noout -dates -enddate | awk -F= '/notAfter/ {print $2}' 2> /dev/null)
   if [ $? -eq 0 ]; then
     expiry_epoch=$(date -D "%b %d %H:%M:%S %Y GMT" -d "$expiration_date" +"%s")
     return 0
