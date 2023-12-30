@@ -228,6 +228,7 @@ if [ "$domains_in_cert_match" = false ]; then
 else
   bashio::log.info "The current certificates in /ssl/ has the required domains!!!!"
   get_cert_expiry
+  get_month_epoch
   if [ "$expiry_epoch" -ge "$one_month" ]; then
     bashio::log.info "The current certificates will be expire in more than a month, script will skip cert renewal!!!!!"
   fi

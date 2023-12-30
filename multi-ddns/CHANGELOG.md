@@ -70,3 +70,7 @@
 ## 1.0.8
 
 - fix unbound variable.
+
+## 1.0.9
+
+- fix unbound variable.
