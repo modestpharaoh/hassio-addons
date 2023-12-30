@@ -207,7 +207,7 @@ else
 fi
 
 # remove the old certificates, if it is not matched
-if [ "$match" = false ]; then
+if [ "$domains_in_cert_match" = false ]; then
   bashio::log.warning "Domains are changed, deleting old certificates in ${CERT_DIR}!!!!"
   rm -rf ${CERT_DIR}/*
 
