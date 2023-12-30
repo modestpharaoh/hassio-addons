@@ -61,3 +61,8 @@
 ## 1.0.6
 
 - Only renew certificates, if it will expire in one month and domains in certificate changed.
+
+## 1.0.7
+
+- Only renew certificates, if it will expire in one month and domains in certificate changed.
+- Improve the logs related.
