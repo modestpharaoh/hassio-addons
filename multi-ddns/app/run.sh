@@ -63,7 +63,7 @@ function get_public_ip() {
 
 # Function to get domains in current certificate
 function get_current_cert_domains() {
-  cert_domains=$(openssl x509 -in ${CERT_DIR}/live/hass-cert/fullchain.pem -noout -text | grep -E 'DNS:' |  sed 's/DNS://g; s/ //g')
+  cert_domains=$(openssl x509 -in /ssl/fullchain.pem -noout -text | grep -E 'DNS:' |  sed 's/DNS://g; s/ //g')
   IFS=',' read -ra cert_domains_array <<< "$cert_domains"
 }
 
@@ -110,7 +110,7 @@ function get_month_epoch() {
 
 # Function to get the expiry date of the certificate
 function get_cert_expiry() {
-  expiration_date=$(openssl x509 -in ${CERT_DIR}/live/hass-cert/fullchain.pem -noout -dates -enddate | awk -F= '/notAfter/ {print $2}' 2> /dev/null)
+  expiration_date=$(openssl x509 -in /ssl/fullchain.pem -noout -dates -enddate | awk -F= '/notAfter/ {print $2}' 2> /dev/null)
   if [ $? -eq 0 ]; then
     expiry_epoch=$(date -D "%b %d %H:%M:%S %Y GMT" -d "$expiration_date" +"%s")
     return 0
@@ -126,10 +126,16 @@ function le_renew() {
     bashio::log.debug "Epoch + one month:" "$one_month"
 
     # Skip update, if certificate will expire more than a month 
-    if [ "$expiry_epoch" -ge "$one_month" ]; then
+    if [ "$expiry_epoch" -ge "$one_month" ] && [ "$domains_in_cert_match" = true ]; then
       bashio::log.debug "Certificate is valid for more than a month, Skipping certificate update!!!"
       LE_UPDATE="$(date +%s)"
       return 0
+    fi
+    if [ "$domains_in_cert_match" = false ]; then
+      bashio::log.info "Domains in certificate are not matched!!!!!"
+    fi
+    if [ "$expiry_epoch" -lt "$one_month" ]; then
+      bashio::log.info "Certificate will be expire in less than a month!!!!!"
     fi
 
     bashio::log.info "Renew certificate for domains: $(echo -n "${DOMAINS}") and aliases: $(echo -n "${aliases}")"
@@ -149,8 +155,10 @@ function le_renew() {
       bashio::log.warning "Certbot renewal exit code:" "$renew_exit_code!!!!"
       bashio::log.warning "Skipping certificate renewal for some time!!!"
     else
+      bashio::log.info "Successfully deploy certificates with base domains!"
       # If there are some domain with *, we will add them by expand
       if [ ${#domain_args[@]} -gt ${#main_domain_args[@]} ]; then
+        domains_in_cert_match=false
         bashio::log.info "Expanding certificates for domains: ${domains_array[@]}"
         bashio::log.debug "Wait for 60 sec..."
         sleep 60
@@ -163,6 +171,9 @@ function le_renew() {
           ${domain_args[@]}
         if [ $? -ne 0 ]; then
           bashio::log.warning "Certbot expand exit code:" "$?"
+        else
+          domains_in_cert_match=true
+          bashio::log.info "Successfully expanding the certificates to with sub-domains!"
         fi
       fi
     fi
@@ -183,19 +194,19 @@ bashio::log.info "ipv6:" "$ipv6"
 get_domains_arrays
 
 # Check if domains are included in the current certificate or different
-match=true
+domains_in_cert_match=true
 if [ "${#cert_domains_array[@]}" -eq "${#domains_array[@]}" ]; then
   for cert_domain in "${cert_domains_array[@]}"; do
     if [[ ! " ${domains_array[@]} " =~ " $cert_domain " ]]; then
-        match=false
+        domains_in_cert_match=false
         break
     fi
   done
 else
-  match=false
+  domains_in_cert_match=false
 fi
 # remove the old certificates, if it is not matched
-if [ "$match" = false ]; then
+if [ "$domains_in_cert_match" = false ]; then
   bashio::log.warning "Domains are changed, deleting old certificates in ${CERT_DIR}!!!!"
   rm -rf ${CERT_DIR}/*
 fi
