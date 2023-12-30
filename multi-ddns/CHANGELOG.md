@@ -38,3 +38,9 @@
 ## 1.0.1
 
 - Improve the error handling and code comments
+
+## 1.0.2
+
+- Only issue renew, if certificate is going to expire in less than a month.
+- Reset let's encrypt folder, if domains are changed.
+- Now you can also include * sub-domains of DuckDNS and Dynu. 
