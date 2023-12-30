@@ -114,7 +114,7 @@ function le_renew() {
       --register-unsafely-without-email --agree-tos \
       --deploy-hook /deploy_hook.sh \
       --non-interactive \
-      ${main_domain_args[@]} # || bashio::log.warning "Add-on hit the limit of let's encrypt updates!!"
+      ${main_domain_args[@]}
     renew_exit_code=$?
     
 
@@ -133,12 +133,15 @@ function le_renew() {
           --register-unsafely-without-email --agree-tos \
           --deploy-hook /deploy_hook.sh \
           --non-interactive \
-          ${domain_args[@]} # || bashio::log.warning "Add-on hit the limit of let's encrypt updates!!"
-        bashio::log.warning "Certbot expand exit code:" "$?"
+          ${domain_args[@]}
+        if [ $? -ne 0 ]; then
+          bashio::log.warning "Certbot expand exit code:" "$?"
+        fi
       fi
     fi
 
     LE_UPDATE="$(date +%s)"
+    bashio::log.debug "Next update at epoch:" "$LE_UPDATE"
 }
 
 ########################
