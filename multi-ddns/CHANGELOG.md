@@ -52,3 +52,8 @@
 ## 1.0.4
 
 - Update some debugging logs.
+
+## 1.0.5
+
+- Only update the DDNS, if Public IP was pulled from internet
+- Better logging when IP changed.
