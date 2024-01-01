@@ -66,3 +66,7 @@
 
 - Only renew certificates, if it will expire in one month and domains in certificate changed.
 - Improve the logs related.
+
+## 1.0.8
+
+- fix unbound variable.
