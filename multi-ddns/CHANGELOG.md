@@ -57,3 +57,7 @@
 
 - Only update the DDNS, if Public IP was pulled from internet
 - Better logging when IP changed.
+
+## 1.0.6
+
+- Only renew certificates, if it will expire in one month and domains in certificate changed.
