@@ -205,25 +205,32 @@ if [ "${#cert_domains_array[@]}" -eq "${#domains_array[@]}" ]; then
 else
   domains_in_cert_match=false
 fi
+
 # remove the old certificates, if it is not matched
-if [ "$domains_in_cert_match" = false ]; then
+if [ "$match" = false ]; then
   bashio::log.warning "Domains are changed, deleting old certificates in ${CERT_DIR}!!!!"
   rm -rf ${CERT_DIR}/*
-fi
 
-# Register/generate certificate if terms accepted
-if bashio::config.true 'lets_encrypt.accept_terms'; then
-# Init folder structs
-    bashio::log.info "Create ${CERT_DIR}..."
-    mkdir -p "${CERT_DIR}"
+  # Register/generate certificate if terms accepted
+  if bashio::config.true 'lets_encrypt.accept_terms'; then
+  # Init folder structs
+      bashio::log.info "Create ${CERT_DIR}..."
+      mkdir -p "${CERT_DIR}"
 
-    # Generate new certs config
-    if [ ! -d "${CERT_DIR}/live" ]; then
-        bashio::log.info "Generate basic config in ${CERT_DIR}..."
-        certbot certonly --non-interactive \
-            --register-unsafely-without-email --agree-tos \
-            -d yourdomain.com &> /dev/null || true
-    fi
+      # Generate new certs config
+      if [ ! -d "${CERT_DIR}/live" ]; then
+          bashio::log.info "Generate basic config in ${CERT_DIR}..."
+          certbot certonly --non-interactive \
+              --register-unsafely-without-email --agree-tos \
+              -d yourdomain.com &> /dev/null || true
+      fi
+  fi
+else
+  bashio::log.info "The current certificates in /ssl/ has the required domains!!!!"
+  get_cert_expiry
+  if [ "$expiry_epoch" -ge "$one_month" ]; then
+    bashio::log.info "The current certificates will be expire in more than a month, script will skip cert renewal!!!!!"
+  fi
 fi
 
 # Loop to update the DDNS with public ip periodically.
