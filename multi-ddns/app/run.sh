@@ -26,6 +26,7 @@ DUCK_TOKEN=$(bashio::config 'duck_token')
 DOMAINS=$(bashio::config 'domains')
 ALIASES=$(bashio::config 'aliases')
 WAIT_TIME=$(bashio::config 'seconds')
+WILDCARD=$(bashio::config 'wildcard_alias')
 
 export Dynu_Token=$DYNU_TOKEN
 export Duck_Token=$DUCK_TOKEN
@@ -272,7 +273,7 @@ while true; do
             # Update the Dynu domain with the public ip
             dynu_ip_resp=$(curl -s -f -m 20 -X POST -H "API-Key: ${Dynu_Token}" -H "Content-Type: application/json" \
               "https://api.dynu.com/v2/dns/${DynuDomainId}"  \
-              -d "{\"name\":\"$domain\",\"ipv4Address\": \"${ipv4}\",\"ipv6Address\": \"${ipv6}\"}")
+              -d "{\"name\":\"$domain\",\"ipv4Address\": \"${ipv4}\",\"ipv6Address\": \"${ipv6}\",\"ipv4WildcardAlias\": ${WILDCARD},\"ipv6WildcardAlias\": ${WILDCARD}}")
             bashio::log.debug "Domain ${domain}: Dynu update ip response:" "${dynu_ip_resp}"
           else
             bashio::log.warning "Domain ${domain}: Skipping Dynu IP update, as failed to get Dynu domain ID!!"
