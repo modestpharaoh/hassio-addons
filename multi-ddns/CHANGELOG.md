@@ -1,43 +1,37 @@
 # Changelog
 
-## 0.0.1
+## 1.1.0
+- Allow wildcard alias options for Dynu DNS.
 
-- Initial version
+## 1.0.9
 
+- fix unbound variable.
 
-## 0.0.4
+## 1.0.8
 
-- Added the missing deploy_hook.sh script
+- fix unbound variable.
 
-## 0.0.5
+## 1.0.7
 
-- Added log level.
+- Only renew certificates, if it will expire in one month and domains in certificate changed.
+- Improve the logs related.
 
-## 0.0.6
+## 1.0.6
 
-- Fix log level bug.
+- Only renew certificates, if it will expire in one month and domains in certificate changed.
 
-## 0.0.7
+## 1.0.5
 
-- Fix for log level
+- Only update the DDNS, if Public IP was pulled from internet
+- Better logging when IP changed.
 
+## 1.0.4
 
-## 0.0.8
+- Update some debugging logs.
 
-- improved error handling
+## 1.0.3
 
-## 0.0.9
-
-- improved error handling
-
-## 1.0.0
-
-- Update the certificate refresh to 12 hrs
-
-
-## 1.0.1
-
-- Improve the error handling and code comments
+- Fix bug of changing domains in the config
 
 ## 1.0.2
 
@@ -45,32 +39,38 @@
 - Reset let's encrypt folder, if domains are changed.
 - Now you can also include * sub-domains of DuckDNS and Dynu. 
 
-## 1.0.3
+## 1.0.1
 
-- Fix bug of changing domains in the config
+- Improve the error handling and code comments
 
-## 1.0.4
+## 1.0.0
 
-- Update some debugging logs.
+- Update the certificate refresh to 12 hrs
 
-## 1.0.5
+## 0.0.9
 
-- Only update the DDNS, if Public IP was pulled from internet
-- Better logging when IP changed.
+- improved error handling
 
-## 1.0.6
+## 0.0.8
 
-- Only renew certificates, if it will expire in one month and domains in certificate changed.
+- improved error handling
 
-## 1.0.7
+## 0.0.7
 
-- Only renew certificates, if it will expire in one month and domains in certificate changed.
-- Improve the logs related.
+- Fix for log level
 
-## 1.0.8
+## 0.0.6
 
-- fix unbound variable.
+- Fix log level bug.
 
-## 1.0.9
+## 0.0.5
 
-- fix unbound variable.
+- Added log level.
+
+## 0.0.4
+
+- Added the missing deploy_hook.sh script
+
+## 0.0.1
+
+- Initial version
