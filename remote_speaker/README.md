@@ -1,4 +1,6 @@
-# Home Assistant Add-on: Remote Speaker
+# Home Assistant Add-on: Remote Speaker (Deprecated)
+
+**This add-on is deprecated, please use VLC add-on instead.**
 
 Allow Home Assistant to use your local audio device as audio media player via a simple Rest-API.
 
