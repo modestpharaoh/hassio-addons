@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.0
+- Update the base image to 3.22
+
 ## 1.1.0
 - Allow wildcard alias options for Dynu DNS.
 
