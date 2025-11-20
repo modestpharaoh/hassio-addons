@@ -1,13 +1,21 @@
 {
   "name": "Multi-DDNS",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "slug": "multiddns",
   "description": "Free Dynamic DNS via Multi DDNS Provider with Let's Encrypt support",
   "url": "https://github.com/modestpharaoh/hassio-addons/tree/master/multi-ddns",
-  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "arch": [
+    "armhf",
+    "armv7",
+    "aarch64",
+    "amd64",
+    "i386"
+  ],
   "startup": "services",
   "init": "false",
-  "map": ["ssl:rw"],
+  "map": [
+    "ssl:rw"
+  ],
   "options": {
     "lets_encrypt": {
       "accept_terms": false,
@@ -16,7 +24,9 @@
     },
     "duck_token": null,
     "dynu_token": null,
-    "domains": [null],
+    "domains": [
+      null
+    ],
     "aliases": [],
     "wildcard_alias": false,
     "seconds": 120,
@@ -32,9 +42,14 @@
     "ipv6": "str?",
     "duck_token": "str",
     "dynu_token": "str",
-    "domains": ["str"],
+    "domains": [
+      "str"
+    ],
     "aliases": [
-      {"domain": "str", "alias": "str"}
+      {
+        "domain": "str",
+        "alias": "str"
+      }
     ],
     "wildcard_alias": "bool",
     "seconds": "int",
